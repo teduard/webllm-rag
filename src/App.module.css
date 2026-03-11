@@ -1,0 +1,80 @@
+.app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  position: relative;
+}
+
+/* ── Model picker overlay ── */
+.pickerWrap {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 48px 24px;
+  overflow-y: auto;
+}
+
+.dismissBtn {
+  background: none;
+  border: 1px solid var(--border2);
+  color: var(--ink2);
+  padding: 8px 20px;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  border-radius: var(--radius);
+  transition: color 0.15s, border-color 0.15s;
+}
+.dismissBtn:hover { color: var(--ink); border-color: var(--ink2); }
+
+/* ── Landing ── */
+.landing {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  text-align: center;
+  padding: 48px;
+}
+
+.landingTitle {
+  font-family: var(--font-disp);
+  font-size: 2rem;
+  font-weight: 300;
+  color: var(--ink);
+  font-style: italic;
+}
+
+.landingSub {
+  color: var(--ink3);
+  font-size: 12px;
+  line-height: 1.8;
+}
+
+/* ── Model toggle button (top-right corner) ── */
+.modelToggle {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--ink3);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  padding: 4px 10px;
+  border-radius: var(--radius);
+  z-index: 10;
+  transition: color 0.15s, border-color 0.15s;
+}
+.modelToggle:hover { color: var(--ink2); border-color: var(--border2); }
