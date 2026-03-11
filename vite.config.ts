@@ -8,5 +8,5 @@ export default defineConfig({
   },
   worker: { format: "es" },
   build: { target: "esnext" },
-  base: "/",
+  base: "/webllm-rag/",
 });
