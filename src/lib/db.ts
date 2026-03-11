@@ -22,8 +22,12 @@ export async function saveNote(name: string, content: string): Promise<number> {
   return db.notes.add({ name, content, uploadedAt: Date.now(), chunkCount: 0 });
 }
 
-export async function markNoteIndexed(fileId: number, chunkCount: number) {
-  await db.notes.update(fileId, { chunkCount });
+export async function markNoteIndexed(
+  fileId: number,
+  chunkCount: number,
+  tokenCount?: number
+) {
+  await db.notes.update(fileId, { chunkCount, tokenCount });
 }
 
 export async function saveChunks(

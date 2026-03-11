@@ -3,25 +3,10 @@ import react from "@vitejs/plugin-react";
 
 export default defineConfig({
   plugins: [react()],
-
   optimizeDeps: {
-    exclude: ["@huggingface/transformers", "@mlc-ai/web-llm"],
+    exclude: ["@mlc-ai/web-llm"],
   },
-
-  worker: {
-    format: "es",
-  },
-
-  build: {
-    target: "esnext",
-  },
-
-  server: {
-    headers: {
-      "Cross-Origin-Opener-Policy": "same-origin",
-      "Cross-Origin-Embedder-Policy": "require-corp",
-    },
-  },
-
-  base: "/webllm-rag/",
+  worker: { format: "es" },
+  build: { target: "esnext" },
+  base: "/",
 });

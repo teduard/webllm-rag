@@ -1,5 +1,5 @@
 import styles from "./ModelPicker.module.css";
-import { AVAILABLE_MODELS } from "../lib/models";
+import { AVAILABLE_MODELS, EMBED_MODEL_ID, EMBED_MODEL_SIZE } from "../lib/models";
 import type { ModelLoadStatus } from "../types";
 
 interface Props {
@@ -14,16 +14,13 @@ export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
   const isReady   = status.stage === "ready";
   const isError   = status.stage === "error";
   const pct       = isLoading ? Math.round((status as any).progress * 100) : 0;
+  const loadText  = isLoading ? (status as any).text : "";
 
   return (
     <div className={styles.wrapper}>
       <div className={styles.header}>
         <span className={styles.title}>select model</span>
-        {isReady && (
-          <span className={styles.readyBadge}>
-            ● ready
-          </span>
-        )}
+        {isReady && <span className={styles.readyBadge}>● ready</span>}
       </div>
 
       <div className={styles.grid}>
@@ -38,12 +35,23 @@ export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
             >
               <div className={styles.cardTop}>
                 <span className={styles.cardLabel}>{m.label}</span>
-                <span className={styles.cardSize}>{m.sizeGb}</span>
+                <span className={styles.cardSize}>{m.totalSizeGb}</span>
+              </div>
+              <div className={styles.cardMeta}>
+                <span>{m.contextWindow.toLocaleString()} token ctx</span>
               </div>
               <span className={styles.cardDesc}>{m.description}</span>
             </button>
           );
         })}
+      </div>
+
+      {/* Embed model note */}
+      <div className={styles.embedNote}>
+        <span className={styles.embedLabel}>+ embedding model</span>
+        <span className={styles.embedId}>{EMBED_MODEL_ID.split("-").slice(0,3).join("-")}</span>
+        <span className={styles.embedSize}>{EMBED_MODEL_SIZE}</span>
+        <span className={styles.embedDesc}>included in all totals above · cached after first load</span>
       </div>
 
       {isLoading ? (
@@ -52,7 +60,7 @@ export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
             <div className={styles.progressBar} style={{ width: `${pct}%` }} />
           </div>
           <span className={styles.progressText}>
-            {pct}% — {(status as any).text}
+            {pct}% — {loadText}
           </span>
         </div>
       ) : (
@@ -61,7 +69,7 @@ export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
           onClick={onLoad}
           disabled={isLoading}
         >
-          {isReady ? "↺ reload model" : "load model →"}
+          {isReady ? "↺ reload model" : "load models →"}
         </button>
       )}
 
@@ -70,7 +78,7 @@ export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
       )}
 
       <p className={styles.note}>
-        downloaded once · cached in your browser · nothing leaves your machine
+        downloaded once / cached in browser / runs on your GPU / nothing leaves your machine
       </p>
     </div>
   );

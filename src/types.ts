@@ -4,6 +4,7 @@ export interface NoteFile {
   content: string;
   uploadedAt: number;
   chunkCount: number;
+  tokenCount?: number;
 }
 
 export interface EmbeddedChunk {
@@ -35,8 +36,20 @@ export interface ScoredChunk extends EmbeddedChunk {
 export interface ModelOption {
   id: string;
   label: string;
-  sizeGb: string;
+  chatSizeGb: string;
+  embedSizeGb: string;
+  totalSizeGb: string;
+  contextWindow: number;
   description: string;
+}
+
+export type InferenceMode = "direct" | "rag";
+
+export interface TokenInfo {
+  fileTokens: number;
+  contextWindow: number;
+  mode: InferenceMode;
+  usagePct: number;
 }
 
 export type ModelLoadStatus =
@@ -48,7 +61,7 @@ export type ModelLoadStatus =
 export type IndexStatus =
   | { stage: "idle" }
   | { stage: "chunking" }
-  | { stage: "embedding" }
+  | { stage: "embedding"; done: number; total: number }
   | { stage: "saving" }
   | { stage: "done"; chunkCount: number }
   | { stage: "error"; message: string };

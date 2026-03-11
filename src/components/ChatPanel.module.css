@@ -236,3 +236,47 @@
 }
 
 .sendBtn:disabled { opacity: 0.3; cursor: default; }
+
+/* ── Token bar ── */
+.tokenBar {
+  padding: 6px 20px 8px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tokenBarTrack {
+  height: 2px;
+  background: var(--border);
+  border-radius: 1px;
+  overflow: hidden;
+}
+
+.tokenBarFill {
+  height: 100%;
+  border-radius: 1px;
+  transition: width 0.4s ease;
+}
+
+.tokenBarMeta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tokenCount {
+  font-size: 10px;
+  color: var(--ink3);
+}
+
+.modeBadge {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+}
+
+.modeHint {
+  color: var(--ink3);
+  font-style: normal;
+}

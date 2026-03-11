@@ -5,11 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "tsc && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@huggingface/transformers": "^3.0.0",
     "@mlc-ai/web-llm": "^0.2.79",
     "dexie": "^4.0.8",
     "react": "^18.3.1",

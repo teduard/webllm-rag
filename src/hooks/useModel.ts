@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import type { ModelLoadStatus } from "../types";
-import { loadModel } from "../lib/llm";
+import { loadModels } from "../lib/llm";
 import { DEFAULT_MODEL_ID } from "../lib/models";
 
 export function useModel() {
@@ -10,7 +10,7 @@ export function useModel() {
   const load = useCallback(async (modelId?: string) => {
     const id = modelId ?? selectedModelId;
     if (modelId) setSelectedModelId(modelId);
-    await loadModel(id, setStatus);
+    await loadModels(id, setStatus);
   }, [selectedModelId]);
 
   return { selectedModelId, setSelectedModelId, status, load };

@@ -5,7 +5,7 @@ import {
   saveChunks, markNoteIndexed,
 } from "../lib/db";
 import { chunkDocument } from "../lib/chunker";
-import { embed } from "../lib/embedder";
+import { embed, countTokens, getLoadedModelId } from "../lib/llm";
 
 export function useNotes() {
   const [notes, setNotes]             = useState<NoteFile[]>([]);
@@ -31,18 +31,25 @@ export function useNotes() {
 
     try {
       const content = await file.text();
-      console.log("content = ", content)
       const fileId  = await saveNote(file.name, content);
 
+      // Count tokens using the loaded model's tokenizer
+      let tokenCount: number | undefined;
+      if (getLoadedModelId()) {
+        tokenCount = await countTokens(content);
+      }
+
+      // Chunk
       setIndexStatus({ stage: "chunking" });
       const chunks = chunkDocument(content, file.name);
 
-      setIndexStatus({ stage: "embedding" });
+      // Embed all chunks via WebLLM embedding engine
+      setIndexStatus({ stage: "embedding", done: 0, total: chunks.length });
       const texts      = chunks.map((c) => c.text);
       const embeddings = await embed(texts);
+      setIndexStatus({ stage: "embedding", done: chunks.length, total: chunks.length });
 
-      console.log("embeddings = ", embeddings)
-
+      // Save
       setIndexStatus({ stage: "saving" });
       await saveChunks(
         fileId,
@@ -52,12 +59,11 @@ export function useNotes() {
           chunkIndex: i,
         }))
       );
-      await markNoteIndexed(fileId, chunks.length);
+      await markNoteIndexed(fileId, chunks.length, tokenCount);
 
       await refresh();
       setIndexStatus({ stage: "done", chunkCount: chunks.length });
 
-      // Return the saved note
       const all = await loadAllNotes();
       return all.find((n) => n.id === fileId) ?? null;
     } catch (e: unknown) {

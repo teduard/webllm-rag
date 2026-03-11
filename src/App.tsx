@@ -12,8 +12,7 @@ export default function App() {
   const { selectedModelId, setSelectedModelId, status: modelStatus, load } = useModel();
   const { notes, isLoading, indexStatus, uploadFile, removeNote } = useNotes();
   const [activeNote, setActiveNote] = useState<NoteFile | null>(null);
-  const { messages, isThinking, sendMessage, clearConversation } = useChat(activeNote);
-
+  const { messages, isThinking, tokenInfo, sendMessage, clearConversation } = useChat(activeNote);
   const [showPicker, setShowPicker] = useState(true);
 
   const handleUpload = useCallback(async (file: File) => {
@@ -30,10 +29,6 @@ export default function App() {
     load();
     setShowPicker(false);
   }, [load]);
-
-  const handleSelectModel = useCallback((id: string) => {
-    setSelectedModelId(id);
-  }, [setSelectedModelId]);
 
   const modelReady = modelStatus.stage === "ready";
 
@@ -52,13 +47,12 @@ export default function App() {
       )}
 
       <main className={styles.main}>
-        {/* Model picker — shown until model is ready, or when toggled */}
         {(showPicker || !modelReady) && (
           <div className={styles.pickerWrap}>
             <ModelPicker
               selectedId={selectedModelId}
               status={modelStatus}
-              onSelect={handleSelectModel}
+              onSelect={setSelectedModelId}
               onLoad={handleLoad}
             />
             {modelReady && (
@@ -72,10 +66,9 @@ export default function App() {
           </div>
         )}
 
-        {/* Chat view */}
         {!showPicker && modelReady && !activeNote && (
           <div className={styles.landing}>
-            <p className={styles.landingTitle}>select a note to begin</p>
+            <p className={styles.landingTitle}>ready.</p>
             <p className={styles.landingSub}>
               upload a .txt or .md file from the sidebar,<br />
               then ask anything about its contents.
@@ -102,6 +95,7 @@ export default function App() {
               note={activeNote}
               messages={messages}
               isThinking={isThinking}
+              tokenInfo={tokenInfo}
               onSend={sendMessage}
               onClear={clearConversation}
             />

@@ -41,7 +41,7 @@ export function Sidebar({
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
         <span className={styles.brandName}>ask your notes</span>
-        <span className={styles.brandSub}>browser · local · private</span>
+        <span className={styles.brandSub}>browser / local / private</span>
       </div>
 
       <input

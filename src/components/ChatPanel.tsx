@@ -1,17 +1,46 @@
 import { useRef, useEffect, useState } from "react";
 import ReactMarkdown from "react-markdown";
-import type { Message, NoteFile } from "../types";
+import type { Message, NoteFile, TokenInfo } from "../types";
 import styles from "./ChatPanel.module.css";
 
 interface Props {
   note: NoteFile;
   messages: Message[];
   isThinking: boolean;
+  tokenInfo: TokenInfo | null;
   onSend: (text: string) => void;
   onClear: () => void;
 }
 
-export function ChatPanel({ note, messages, isThinking, onSend, onClear }: Props) {
+function TokenBar({ info }: { info: TokenInfo }) {
+  const pct     = info.usagePct;
+  const isDirect = info.mode === "direct";
+  const barColor = pct > 90 ? "var(--danger)" : pct > 70 ? "var(--accent2)" : "var(--ok)";
+
+  return (
+    <div className={styles.tokenBar}>
+      <div className={styles.tokenBarTrack}>
+        <div
+          className={styles.tokenBarFill}
+          style={{ width: `${Math.min(pct, 100)}%`, background: barColor }}
+        />
+      </div>
+      <div className={styles.tokenBarMeta}>
+        <span className={styles.tokenCount}>
+          {info.fileTokens.toLocaleString()} / {info.contextWindow.toLocaleString()} tokens
+        </span>
+        <span
+          className={styles.modeBadge}
+          style={{ color: isDirect ? "var(--ok)" : "var(--accent2)" }}
+        >
+          {isDirect ? "● direct context" : "● rag retrieval"}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+export function ChatPanel({ note, messages, isThinking, tokenInfo, onSend, onClear }: Props) {
   const [draft, setDraft] = useState("");
   const bottomRef         = useRef<HTMLDivElement>(null);
   const textareaRef       = useRef<HTMLTextAreaElement>(null);
@@ -20,7 +49,6 @@ export function ChatPanel({ note, messages, isThinking, onSend, onClear }: Props
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, isThinking]);
 
-  // Auto-resize textarea
   useEffect(() => {
     const ta = textareaRef.current;
     if (!ta) return;
@@ -42,24 +70,32 @@ export function ChatPanel({ note, messages, isThinking, onSend, onClear }: Props
     }
   }
 
-  const canSend = draft.trim().length > 0 && !isThinking;
-
   return (
     <div className={styles.panel}>
       <header className={styles.header}>
         <div className={styles.headerLeft}>
           <span className={styles.noteIcon}>▤</span>
           <span className={styles.noteName}>{note.name}</span>
-          <span className={styles.chunkBadge}>{note.chunkCount} chunks</span>
         </div>
         <button className={styles.clearBtn} onClick={onClear}>clear</button>
       </header>
+
+      {tokenInfo && <TokenBar info={tokenInfo} />}
 
       <div className={styles.messages}>
         {messages.length === 0 && (
           <div className={styles.empty}>
             <p className={styles.emptyTitle}>ready.</p>
-            <p className={styles.emptySub}>ask anything about <em>{note.name}</em></p>
+            <p className={styles.emptySub}>
+              ask anything about <em>{note.name}</em>
+              {tokenInfo && (
+                <span className={styles.modeHint}>
+                  {tokenInfo.mode === "direct"
+                    ? " / full file in context"
+                    : " / answering via retrieval"}
+                </span>
+              )}
+            </p>
           </div>
         )}
 
@@ -97,7 +133,7 @@ export function ChatPanel({ note, messages, isThinking, onSend, onClear }: Props
           ref={textareaRef}
           className={styles.textarea}
           value={draft}
-          placeholder="ask a question…  ↵ to send · shift+↵ for newline"
+          placeholder="ask a question…  ↵ send · shift+↵ newline"
           onChange={(e) => setDraft(e.target.value)}
           onKeyDown={handleKey}
           disabled={isThinking}
@@ -106,7 +142,7 @@ export function ChatPanel({ note, messages, isThinking, onSend, onClear }: Props
         <button
           className={styles.sendBtn}
           onClick={submit}
-          disabled={!canSend}
+          disabled={isThinking || !draft.trim()}
         >↵</button>
       </div>
     </div>
