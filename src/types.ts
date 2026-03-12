@@ -1,38 +1,3 @@
-export interface NoteFile {
-  id?: number;
-  name: string;
-  content: string;
-  uploadedAt: number;
-  chunkCount: number;
-  tokenCount?: number;
-}
-
-export interface EmbeddedChunk {
-  id?: number;
-  fileId: number;
-  text: string;
-  embedding: number[];
-  chunkIndex: number;
-}
-
-export interface Conversation {
-  id?: number;
-  fileId: number;
-  startedAt: number;
-  updatedAt: number;
-  messages: Message[];
-}
-
-export interface Message {
-  role: "user" | "assistant";
-  text: string;
-  createdAt: number;
-}
-
-export interface ScoredChunk extends EmbeddedChunk {
-  score: number;
-}
-
 export interface ModelOption {
   id: string;
   label: string;
@@ -43,14 +8,34 @@ export interface ModelOption {
   description: string;
 }
 
+export interface Message {
+  role: "user" | "assistant";
+  text: string;
+}
+
+// How the current file is being answered
 export type InferenceMode = "direct" | "rag";
 
-export interface TokenInfo {
-  fileTokens: number;
-  contextWindow: number;
+export interface FileState {
+  name: string;
+  content: string;
+  tokenCount: number;
   mode: InferenceMode;
-  usagePct: number;
+  // RAG-specific - null when mode === "direct"
+  chunks: EmbeddedChunk[] | null;
 }
+
+export interface EmbeddedChunk {
+  text: string;
+  embedding: number[];
+}
+
+export type AppStage =
+  | "idle"          // no model loaded yet
+  | "loading-model" // downloading / initialising
+  | "ready"         // model ready, no file loaded
+  | "indexing"      // file uploaded, embedding in progress
+  | "chat";         // file ready, conversation active
 
 export type ModelLoadStatus =
   | { stage: "idle" }
@@ -58,10 +43,15 @@ export type ModelLoadStatus =
   | { stage: "ready"; modelId: string }
   | { stage: "error"; message: string };
 
-export type IndexStatus =
-  | { stage: "idle" }
-  | { stage: "chunking" }
-  | { stage: "embedding"; done: number; total: number }
-  | { stage: "saving" }
-  | { stage: "done"; chunkCount: number }
-  | { stage: "error"; message: string };
+export type IndexStage =
+  | "chunking"
+  | "embedding"
+  | "done"
+  | "error";
+
+export interface IndexProgress {
+  stage: IndexStage;
+  done?: number;
+  total?: number;
+  error?: string;
+}

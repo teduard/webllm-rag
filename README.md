@@ -13,19 +13,19 @@ leave your machine.
 The app measures the token length of your file against the selected
 model's context window before answering any question. Based on this:
 
-**Direct context** — if the file fits within the context window, its
+**Direct context** - if the file fits within the context window, its
 full content is passed directly to the model. The model reads
 everything at once, with no risk of retrieval missing relevant
 sections. This is the preferred path and is used whenever possible.
 
-**RAG fallback** — if the file exceeds the context window, the app
+**RAG fallback** - if the file exceeds the context window, the app
 falls back to a retrieval-augmented generation pipeline. The file is
 split into semantically coherent chunks, each chunk is embedded using
 a dedicated embedding model (snowflake-arctic-embed-s, running on
 WebGPU), and at query time the top-5 most similar chunks are
 retrieved using cosine similarity and injected into the prompt.
 
-The active mode is shown in the UI as a live indicator — you can see
+The active mode is shown in the UI as a live indicator - you can see
 exactly which path is being used and how much of the context window
 your file occupies.
 
@@ -50,7 +50,7 @@ context or RAG is used.
 
 Notes, embeddings, and conversation history are stored in IndexedDB
 via [Dexie.js](https://dexie.org/). Refreshing the page restores
-everything — previously indexed notes skip re-embedding, and chat
+everything - previously indexed notes skip re-embedding, and chat
 history is preserved per note.
 
 ---
@@ -98,7 +98,7 @@ npm run dev
 
 ## Deploy
 
-Fully static — deploy to any static host (Netlify, Cloudflare Pages,
+Fully static - deploy to any static host (Netlify, Cloudflare Pages,
 Vercel). No special server configuration required.
 
 GitHub Pages is not recommended as it does not allow controlling

@@ -1,6 +1,7 @@
-import styles from "./ModelPicker.module.css";
-import { AVAILABLE_MODELS, EMBED_MODEL_ID, EMBED_MODEL_SIZE } from "../lib/models";
+import { useRef } from "react";
 import type { ModelLoadStatus } from "../types";
+import { MODELS } from "../lib/models";
+import s from "./ModelPicker.module.css";
 
 interface Props {
   selectedId: string;
@@ -12,73 +13,63 @@ interface Props {
 export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
   const isLoading = status.stage === "loading";
   const isReady   = status.stage === "ready";
-  const isError   = status.stage === "error";
   const pct       = isLoading ? Math.round((status as any).progress * 100) : 0;
-  const loadText  = isLoading ? (status as any).text : "";
+  const txt       = isLoading ? (status as any).text as string : "";
 
   return (
-    <div className={styles.wrapper}>
-      <div className={styles.header}>
-        <span className={styles.title}>select model</span>
-        {isReady && <span className={styles.readyBadge}>● ready</span>}
+    <div className={s.wrap}>
+      <div className={s.heading}>
+        <h1 className={s.title}>1 - Choose Model</h1>
+        <p className={s.sub}>
+          Chat with your .txt or .md file on your GPU<br/>
+          Your data stays on your device.
+        </p>
       </div>
 
-      <div className={styles.grid}>
-        {AVAILABLE_MODELS.map((m) => {
-          const active = m.id === selectedId;
-          return (
+      <div className={s.section}>
+        <span className={s.label}>1 · choose model</span>
+        <div className={s.grid}>
+          {MODELS.map(m => (
             <button
               key={m.id}
-              className={`${styles.card} ${active ? styles.active : ""}`}
+              className={`${s.card} ${m.id === selectedId ? s.active : ""}`}
               onClick={() => onSelect(m.id)}
               disabled={isLoading}
             >
-              <div className={styles.cardTop}>
-                <span className={styles.cardLabel}>{m.label}</span>
-                <span className={styles.cardSize}>{m.totalSizeGb}</span>
+              <div className={s.cardRow}>
+                <span className={s.cardName}>{m.label}</span>
+                <span className={s.cardSize}>{m.totalSizeGb} GB</span>
               </div>
-              <div className={styles.cardMeta}>
-                <span>{m.contextWindow.toLocaleString()} token ctx</span>
-              </div>
-              <span className={styles.cardDesc}>{m.description}</span>
+              <span className={s.cardCtx}>{m.contextWindow.toLocaleString()} token context</span>
+              <span className={s.cardDesc}>{m.description}</span>
             </button>
-          );
-        })}
-      </div>
-
-      {/* Embed model note */}
-      <div className={styles.embedNote}>
-        <span className={styles.embedLabel}>+ embedding model</span>
-        <span className={styles.embedId}>{EMBED_MODEL_ID.split("-").slice(0,3).join("-")}</span>
-        <span className={styles.embedSize}>{EMBED_MODEL_SIZE}</span>
-        <span className={styles.embedDesc}>included in all totals above · cached after first load</span>
-      </div>
-
-      {isLoading ? (
-        <div className={styles.progress}>
-          <div className={styles.progressTrack}>
-            <div className={styles.progressBar} style={{ width: `${pct}%` }} />
-          </div>
-          <span className={styles.progressText}>
-            {pct}% — {loadText}
-          </span>
+          ))}
         </div>
-      ) : (
-        <button
-          className={styles.loadBtn}
-          onClick={onLoad}
-          disabled={isLoading}
-        >
-          {isReady ? "↺ reload model" : "load models →"}
-        </button>
-      )}
+      </div>
 
-      {isError && (
-        <p className={styles.error}>{(status as any).message}</p>
-      )}
+      <div className={s.section}>
+        <span className={s.label}>2 · load model</span>
 
-      <p className={styles.note}>
-        downloaded once / cached in browser / runs on your GPU / nothing leaves your machine
+        {isLoading ? (
+          <div className={s.progress}>
+            <div className={s.track}><div className={s.bar} style={{ width: `${pct}%` }} /></div>
+            <span className={s.pct}>{pct}%</span>
+            <span className={s.ptxt}>{txt}</span>
+          </div>
+        ) : (
+          <button className={s.loadBtn} onClick={onLoad}>
+            {isReady ? "↺ reload" : "load →"}
+          </button>
+        )}
+
+        {status.stage === "error" && (
+          <p className={s.err}>{(status as any).message}</p>
+        )}
+      </div>
+
+      <p className={s.note}>
+        Models are cached after first download<br/>
+        Specified size includes the embed model (0.13GB)
       </p>
     </div>
   );

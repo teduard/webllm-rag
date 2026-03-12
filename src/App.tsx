@@ -1,107 +1,105 @@
 import { useState, useCallback } from "react";
-import type { NoteFile } from "./types";
-import { useModel }  from "./hooks/useModel";
-import { useNotes }  from "./hooks/useNotes";
-import { useChat }   from "./hooks/useChat";
+import { useModel }    from "./hooks/useModel";
+import { useSession }  from "./hooks/useSession";
 import { ModelPicker } from "./components/ModelPicker";
-import { Sidebar }     from "./components/Sidebar";
-import { ChatPanel }   from "./components/ChatPanel";
-import styles from "./App.module.css";
+import { FileZone }    from "./components/FileZone";
+import { Chat }        from "./components/Chat";
+import s from "./App.module.css";
+import { Sidebar } from "./components/Sidebar";
+import { RagInternals } from "./components/RagInternals";
 
 export default function App() {
-  const { selectedModelId, setSelectedModelId, status: modelStatus, load } = useModel();
-  const { notes, isLoading, indexStatus, uploadFile, removeNote } = useNotes();
-  const [activeNote, setActiveNote] = useState<NoteFile | null>(null);
-  const { messages, isThinking, tokenInfo, sendMessage, clearConversation } = useChat(activeNote);
-  const [showPicker, setShowPicker] = useState(true);
+  const { modelId, setModelId, status, load } = useModel();
+  const { file, messages, isThinking, indexProgress, loadFile, send, reset } = useSession();
 
-  const handleUpload = useCallback(async (file: File) => {
-    const saved = await uploadFile(file);
-    if (saved) setActiveNote(saved);
-  }, [uploadFile]);
+  const modelReady   = status.stage === "ready";
+  const fileReady    = file !== null && indexProgress?.stage === "done";
+  const showPicker   = !modelReady;
+  const showFileZone = modelReady && !fileReady;
+  const showChat     = modelReady && fileReady;
 
-  const handleDelete = useCallback(async (fileId: number) => {
-    await removeNote(fileId);
-    if (activeNote?.id === fileId) setActiveNote(null);
-  }, [removeNote, activeNote]);
-
-  const handleLoad = useCallback(() => {
-    load();
-    setShowPicker(false);
-  }, [load]);
-
-  const modelReady = modelStatus.stage === "ready";
+  const handleFile = useCallback(async (f: File) => {
+    try { await loadFile(f); }
+    catch (e) { console.error(e); }
+  }, [loadFile]);
 
   return (
-    <div className={styles.app}>
-      {!isLoading && (
-        <Sidebar
-          notes={notes}
-          activeNoteId={activeNote?.id ?? null}
-          indexStatus={indexStatus}
+    <div className={s.app}>
+      <Sidebar
+          notes={[]}
+          activeNoteId={null}
+          indexStatus={0}
           modelReady={modelReady}
-          onSelect={setActiveNote}
-          onUpload={handleUpload}
-          onDelete={handleDelete}
-        />
+          onSelect={() => {}}
+          onUpload={() => {}}
+          onDelete={() => {}}
+        >
+         
+    { /*showPicker &&*/ (
+        <div className={s.center}>
+          <ModelPicker
+            selectedId={modelId}
+            status={status}
+            onSelect={setModelId}
+            onLoad={() => load()}
+          />
+        </div>
       )}
 
-      <main className={styles.main}>
-        {(showPicker || !modelReady) && (
-          <div className={styles.pickerWrap}>
-            <ModelPicker
-              selectedId={selectedModelId}
-              status={modelStatus}
-              onSelect={setSelectedModelId}
-              onLoad={handleLoad}
-            />
-            {modelReady && (
-              <button
-                className={styles.dismissBtn}
-                onClick={() => setShowPicker(false)}
-              >
-                → continue to notes
+      <hr/>
+
+      {/*showFileZone && */(
+        <div className={s.center}>
+          <div className={s.fileWrap}>
+            <div className={s.fileHeader}>
+              <h1 className={s.title}>2 - Upload file</h1>
+              <button className={s.modelBtn} onClick={reset}>
+                Clear File
               </button>
-            )}
+            </div>
+            <FileZone indexProgress={indexProgress} onFile={handleFile} />
+            {/* <p className={s.fileHint}>
+              .txt or .md - files that fit in the model's {
+                status.stage === "ready" ? "" : ""
+              } context window are answered directly - larger files use RAG retrieval
+            </p> */}
           </div>
-        )}
+        </div>
+      )}
 
-        {!showPicker && modelReady && !activeNote && (
-          <div className={styles.landing}>
-            <p className={styles.landingTitle}>ready.</p>
-            <p className={styles.landingSub}>
-              upload a .txt or .md file from the sidebar,<br />
-              then ask anything about its contents.
-            </p>
-            <button
-              className={styles.modelToggle}
-              onClick={() => setShowPicker(true)}
-            >
-              ⚙ {selectedModelId.split("-").slice(0, 3).join(" ")}
-            </button>
+        <hr/>
+        <div className={s.center}>
+          <div className={s.fileWrap}>
+            <div className={s.fileHeader}>
+              <h1 className={s.title}>3 - RAG internals</h1>
+              {/* <button className={s.modelBtn} onClick={reset}>
+                Clear File
+              </button> */}
+            </div>
+            {/* <FileZone indexProgress={indexProgress} onFile={handleFile} />
+            <p className={s.fileHint}>
+              .txt or .md - files that fit in the model's {
+                status.stage === "ready" ? "" : ""
+              } context window are answered directly - larger files use RAG retrieval
+            </p> */}
+            <RagInternals content="test" file={file}/>
           </div>
-        )}
+        </div>
 
-        {!showPicker && modelReady && activeNote && (
-          <>
-            <button
-              className={styles.modelToggle}
-              onClick={() => setShowPicker(true)}
-              title="Change model"
-            >
-              ⚙ {selectedModelId.split("-").slice(0, 3).join(" ")}
-            </button>
-            <ChatPanel
-              note={activeNote}
-              messages={messages}
-              isThinking={isThinking}
-              tokenInfo={tokenInfo}
-              onSend={sendMessage}
-              onClear={clearConversation}
-            />
-          </>
-        )}
-      </main>
+          </Sidebar>
+      
+
+     
+
+      {/*showChat &&*/ file &&(
+        <Chat
+          file={file}
+          messages={messages}
+          isThinking={isThinking}
+          onSend={send}
+          onReset={reset}
+        />
+      )}
     </div>
   );
 }

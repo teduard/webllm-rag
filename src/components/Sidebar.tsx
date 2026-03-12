@@ -1,15 +1,16 @@
 import { useRef } from "react";
-import type { NoteFile, IndexStatus } from "../types";
+//import type { NoteFile, IndexStatus } from "../types";
 import styles from "./Sidebar.module.css";
 
 interface Props {
-  notes: NoteFile[];
+  notes: [];//NoteFile[];
   activeNoteId: number | null;
-  indexStatus: IndexStatus;
+  indexStatus: number;//IndexStatus;
   modelReady: boolean;
-  onSelect: (note: NoteFile) => void;
+  onSelect: (note: File) => void;
   onUpload: (file: File) => void;
   onDelete: (fileId: number) => void;
+  children?: React.ReactNode;
 }
 
 function relativeTime(ts: number): string {
@@ -25,17 +26,12 @@ function relativeTime(ts: number): string {
 
 export function Sidebar({
   notes, activeNoteId, indexStatus, modelReady,
-  onSelect, onUpload, onDelete,
+  onSelect, onUpload, onDelete, children
 }: Props) {
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const indexing = indexStatus.stage !== "idle" && indexStatus.stage !== "done" && indexStatus.stage !== "error";
-  const indexLabel =
-    indexStatus.stage === "chunking"   ? "analysing…"  :
-    indexStatus.stage === "embedding"  ? "embedding…"  :
-    indexStatus.stage === "saving"     ? "saving…"     :
-    indexStatus.stage === "done"       ? `✓ ${(indexStatus as any).chunkCount} chunks` :
-    indexStatus.stage === "error"      ? "error"        : "";
+  const indexing = true;
+  const indexLabel = "testing";
 
   return (
     <aside className={styles.sidebar}>
@@ -44,73 +40,10 @@ export function Sidebar({
         <span className={styles.brandSub}>browser / local / private</span>
       </div>
 
-      <input
-        ref={fileRef}
-        type="file"
-        accept=".txt,.md"
-        style={{ display: "none" }}
-        onChange={(e) => {
-          const f = e.target.files?.[0];
-          if (f) { onUpload(f); e.target.value = ""; }
-        }}
-      />
-
-      <button
-        className={styles.uploadBtn}
-        onClick={() => fileRef.current?.click()}
-        disabled={indexing}
-      >
-        + add note
-      </button>
-
-      {indexing && (
-        <div className={styles.indexingRow}>
-          <span className={styles.spinner} />
-          <span className={styles.indexingLabel}>{indexLabel}</span>
-        </div>
-      )}
-
-      {indexStatus.stage === "done" && (
-        <div className={styles.doneRow}>{indexLabel}</div>
-      )}
-
-      {indexStatus.stage === "error" && (
-        <div className={styles.errorRow}>{(indexStatus as any).message}</div>
-      )}
-
-      <div className={styles.noteList}>
-        {notes.length === 0 && (
-          <p className={styles.empty}>no notes yet</p>
-        )}
-        {notes.map((n) => {
-          const isActive   = n.id === activeNoteId;
-          const isIndexing = n.chunkCount === 0;
-          const canSelect  = modelReady && !isIndexing;
-
-          return (
-            <div
-              key={n.id}
-              className={`${styles.noteItem} ${isActive ? styles.noteActive : ""} ${!canSelect ? styles.noteDisabled : ""}`}
-              onClick={() => canSelect && onSelect(n)}
-            >
-              <div className={styles.noteTop}>
-                <span className={styles.noteName}>{n.name}</span>
-                <button
-                  className={styles.deleteBtn}
-                  onClick={(e) => { e.stopPropagation(); onDelete(n.id!); }}
-                  title="Delete note"
-                >×</button>
-              </div>
-              <div className={styles.noteMeta}>
-                {isIndexing
-                  ? <span className={styles.indexingDot}>indexing…</span>
-                  : <><span>{n.chunkCount} chunks</span><span>·</span><span>{relativeTime(n.uploadedAt)}</span></>
-                }
-              </div>
-            </div>
-          );
-        })}
+      <div>
+        {children}
       </div>
+
     </aside>
   );
 }

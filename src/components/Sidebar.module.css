@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   background: var(--surface);
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* ── Brand ── */
@@ -13,12 +13,13 @@
   padding: 20px 16px 16px;
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
+  text-align: center;
 }
 
 .brandName {
   display: block;
   font-family: var(--font-disp);
-  font-size: 1.05rem;
+  font-size: 3rem;
   font-weight: 300;
   font-style: italic;
   color: var(--ink);
@@ -27,7 +28,7 @@
 
 .brandSub {
   display: block;
-  font-size: 9.5px;
+  font-size: 1rem;
   color: var(--ink3);
   letter-spacing: 0.06em;
   margin-top: 2px;
