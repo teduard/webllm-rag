@@ -10,7 +10,7 @@ let loadedModelId: string | null = null;
 
 export async function loadModels(
   modelId: string,
-  onStatus: (s: ModelLoadStatus) => void
+  onStatus: (s: ModelLoadStatus) => void,
 ): Promise<void> {
   if (chatEngine && embedEngine && loadedModelId === modelId) {
     onStatus({ stage: "ready", modelId });
@@ -25,19 +25,21 @@ export async function loadModels(
 
   try {
     chatEngine = await CreateMLCEngine(modelId, {
-      initProgressCallback: (r) => onStatus({
-        stage: "loading",
-        progress: r.progress * 0.7,
-        text: `Chat model - ${r.text}`,
-      }),
+      initProgressCallback: (r) =>
+        onStatus({
+          stage: "loading",
+          progress: r.progress * 0.7,
+          text: `Chat model - ${r.text}`,
+        }),
     });
 
     embedEngine = await CreateMLCEngine(EMBED_MODEL_ID, {
-      initProgressCallback: (r) => onStatus({
-        stage: "loading",
-        progress: 0.7 + r.progress * 0.3,
-        text: `Embedding model - ${r.text}`,
-      }),
+      initProgressCallback: (r) =>
+        onStatus({
+          stage: "loading",
+          progress: 0.7 + r.progress * 0.3,
+          text: `Embedding model - ${r.text}`,
+        }),
     });
 
     loadedModelId = modelId;
@@ -54,8 +56,11 @@ export async function loadModels(
 
 export async function embed(texts: string[]): Promise<number[][]> {
   if (!embedEngine) throw new Error("Embedding model not loaded");
-  const out = await embedEngine.embeddings.create({ input: texts, model: EMBED_MODEL_ID });
-  return out.data.sort((a, b) => a.index - b.index).map(d => d.embedding);
+  const out = await embedEngine.embeddings.create({
+    input: texts,
+    model: EMBED_MODEL_ID,
+  });
+  return out.data.sort((a, b) => a.index - b.index).map((d) => d.embedding);
 }
 
 export async function embedOne(text: string): Promise<number[]> {
@@ -69,17 +74,21 @@ export function countTokens(text: string): number {
   return Math.ceil(text.length / 3.5);
 }
 
-export async function decideMode(content: string, modelId: string): Promise<{
+export function decideMode(
+  content: string,
+  modelId: string,
+): {
   tokenCount: number;
+  contextWindow: number;
   mode: InferenceMode;
   usagePct: number;
-}> {
-  const model      = findModel(modelId);
-  const available  = model.contextWindow - PROMPT_RESERVE;
-  const tokenCount = await countTokens(content);
+} {
+  const model = findModel(modelId);
+  const available = model.contextWindow - PROMPT_RESERVE;
+  const tokenCount = countTokens(content);
   const mode: InferenceMode = tokenCount <= available ? "direct" : "rag";
-  const usagePct   = Math.min(100, Math.round((tokenCount / available) * 100));
-  return { tokenCount, mode, usagePct };
+  const usagePct = Math.min(100, Math.round((tokenCount / available) * 100));
+  return { tokenCount, contextWindow: model.contextWindow, mode, usagePct };
 }
 
 // ── Streaming chat ────────────────────────────────────────────────────────
@@ -87,7 +96,8 @@ export async function decideMode(content: string, modelId: string): Promise<{
 export async function streamChat(
   system: string,
   user: string,
-  onToken: (t: string) => void
+  onToken: (t: string) => void,
+  signal?: AbortSignal
 ): Promise<void> {
   if (!chatEngine) throw new Error("Chat model not loaded");
 
@@ -102,6 +112,10 @@ export async function streamChat(
   });
 
   for await (const chunk of stream) {
+    if (signal?.aborted) {
+      await chatEngine.interruptGenerate();
+      break;
+    }
     const t = chunk.choices[0]?.delta?.content ?? "";
     if (t) onToken(t);
   }

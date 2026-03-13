@@ -1,27 +1,26 @@
-import type { EmbeddedChunk } from "../types";
+import type { EmbeddedChunk, ScoredChunk } from "../types";
 
-// Normalised vectors - cosine similarity = dot product
 function dot(a: number[], b: number[]): number {
   let s = 0;
   for (let i = 0; i < a.length; i++) s += a[i] * b[i];
   return s;
 }
 
+// Returns scored chunks sorted by relevance, preserving original index
 export function retrieve(
   chunks: EmbeddedChunk[],
   query: number[],
   k = 4,
   minScore = 0.35
-): EmbeddedChunk[] {
+): ScoredChunk[] {
   return chunks
-    .map(c => ({ chunk: c, score: dot(query, c.embedding) }))
+    .map((c, i) => ({ ...c, score: dot(query, c.embedding), index: i }))
     .filter(x => x.score >= minScore)
     .sort((a, b) => b.score - a.score)
-    .slice(0, k)
-    .map(x => x.chunk);
+    .slice(0, k);
 }
 
-export function buildContext(chunks: EmbeddedChunk[]): string {
+export function buildContext(chunks: ScoredChunk[]): string {
   return chunks
     .map((c, i) => `[Excerpt ${i + 1}]\n${c.text}`)
     .join("\n\n---\n\n");

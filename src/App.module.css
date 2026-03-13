@@ -29,10 +29,9 @@
 }
 
 .title {
-  font-family: var(--disp);
+  font-family: var(--font);
   font-size: 1.5rem;
-  font-weight: 300;
-  font-style: italic;
+  font-weight: 700;
   color: var(--ink);
 }
 
@@ -40,7 +39,7 @@
   background: none;
   border: 1px solid var(--border2);
   color: var(--ink3);
-  font-size: 10px;
+  font-size: var(--font-size-sidebar);
   padding: 4px 10px;
   border-radius: var(--radius);
   letter-spacing: 0.04em;
@@ -57,4 +56,13 @@
   font-size: 10px;
   color: var(--ink3);
   line-height: 1.6;
+}
+
+button {
+  padding: 2px 20px;
+}
+
+.emptyText {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
 }

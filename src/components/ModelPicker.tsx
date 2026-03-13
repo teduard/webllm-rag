@@ -2,6 +2,7 @@ import { useRef } from "react";
 import type { ModelLoadStatus } from "../types";
 import { MODELS } from "../lib/models";
 import s from "./ModelPicker.module.css";
+import { ArrowRightIcon, ArrowPathIcon } from "@heroicons/react/24/outline";
 
 interface Props {
   selectedId: string;
@@ -19,15 +20,11 @@ export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
   return (
     <div className={s.wrap}>
       <div className={s.heading}>
-        <h1 className={s.title}>1 - Choose Model</h1>
-        <p className={s.sub}>
-          Chat with your .txt or .md file on your GPU<br/>
-          Your data stays on your device.
-        </p>
+        <h1 className={s.title}>Select Model</h1>
+       
       </div>
 
       <div className={s.section}>
-        <span className={s.label}>1 · choose model</span>
         <div className={s.grid}>
           {MODELS.map(m => (
             <button
@@ -48,7 +45,7 @@ export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
       </div>
 
       <div className={s.section}>
-        <span className={s.label}>2 · load model</span>
+        <span className={s.label}>Load Model</span>
 
         {isLoading ? (
           <div className={s.progress}>
@@ -58,7 +55,11 @@ export function ModelPicker({ selectedId, status, onSelect, onLoad }: Props) {
           </div>
         ) : (
           <button className={s.loadBtn} onClick={onLoad}>
-            {isReady ? "↺ reload" : "load →"}
+            {isReady ? 
+            <span>Reload <ArrowPathIcon className={`${s.heroIcon}`}/></span>
+            :
+            <span>Load <ArrowRightIcon className={`${s.heroIcon}`}/></span>
+            }
           </button>
         )}
 

@@ -70,10 +70,10 @@ history is preserved per note.
 
 | Model | Total size | Context window |
 |---|---|---|
-| Llama 3.2 · 1B | 0.91 GB | 4,096 tokens |
-| Llama 3.2 · 3B | 2.0 GB  | 8,192 tokens |
+| Llama 3.2 - 1B | 0.91 GB | 4,096 tokens |
+| Llama 3.2 - 3B | 2.0 GB  | 8,192 tokens |
 | Phi 3.5 Mini   | 2.3 GB  | 4,096 tokens |
-| Gemma 2 · 2B   | 1.57 GB | 8,192 tokens |
+| Gemma 2 - 2B   | 1.57 GB | 8,192 tokens |
 | Mistral 7B     | 4.2 GB  | 32,768 tokens |
 
 Each total includes the shared embedding model (snowflake-arctic-embed-s, ~130 MB).

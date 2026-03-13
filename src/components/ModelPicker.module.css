@@ -1,3 +1,10 @@
+.heroIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--ink4);
+  display: inline;
+}
+
 .wrap {
   width: 100%;
   max-width: 560px;
@@ -14,15 +21,14 @@
 
 .title {
   font-family: var(--disp);
-  font-size: 2rem;
-  font-weight: 300;
-  font-style: italic;
-  color: var(--ink);
-  letter-spacing: -0.01em;
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .sub {
-  font-size: 12px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink3);
   line-height: 1.7;
 }
@@ -34,7 +40,7 @@
 }
 
 .label {
-  font-size: 10px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink3);
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -79,20 +85,20 @@
   align-items: baseline;
 }
 .cardName {
-  font-size: 12px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink);
   font-weight: 500;
 }
 .cardSize {
-  font-size: 10px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink3);
 }
 .cardCtx {
-  font-size: 10px;
+  font-size: var(--font-size-sidebar);
   color: var(--accent2);
 }
 .cardDesc {
-  font-size: 10.5px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink3);
   line-height: 1.5;
   margin-top: 2px;
@@ -115,11 +121,11 @@
   transition: width 0.3s ease;
 }
 .pct {
-  font-size: 11px;
+  font-size:var(--font-size-sidebar);
   color: var(--ink2);
 }
 .ptxt {
-  font-size: 10px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink3);
   white-space: nowrap;
   overflow: hidden;
@@ -131,21 +137,36 @@
   border: 1px solid var(--accent2);
   color: var(--accent);
   padding: 10px;
-  font-size: 12px;
+  font-size: var(--font-size-sidebar);
   letter-spacing: 0.06em;
   border-radius: var(--radius);
   transition:
     background 0.15s,
     color 0.15s;
   width: 100%;
+
+  color: var(--ink3);
+  font-family: var(--font);
+
+  
+  letter-spacing: 0.04em;
+  transition:
+    color 0.15s,
+    border-color 0.15s;
+  align-self: flex-start;
 }
+
+.loadBtn span {
+  display:inline-flex;
+}
+
 .loadBtn:hover {
   background: var(--accent2);
   color: var(--bg);
 }
 
 .err {
-  font-size: 11px;
+  font-size: var(--font-size-sidebar);
   color: var(--danger);
   border: 1px solid var(--danger);
   border-radius: var(--radius);
@@ -153,7 +174,7 @@
 }
 
 .note {
-  font-size: 10px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink3);
   text-align: center;
 }

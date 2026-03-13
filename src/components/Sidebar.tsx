@@ -36,8 +36,14 @@ export function Sidebar({
   return (
     <aside className={styles.sidebar}>
       <div className={styles.brand}>
-        <span className={styles.brandName}>ask your notes</span>
+        <span className={styles.brandName}>Ask Your Notes</span>
         <span className={styles.brandSub}>browser / local / private</span>
+        <span className={styles.brandSub}>
+          Chat with your .txt or .md file on your GPU<br/>
+          Your data stays on your device.
+        </span>
+        
+        <a href="#">About</a> / <a href="#">View Demo</a> / <a href="#">GitHub</a>
       </div>
 
       <div>

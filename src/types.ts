@@ -13,29 +13,36 @@ export interface Message {
   text: string;
 }
 
-// How the current file is being answered
 export type InferenceMode = "direct" | "rag";
-
-export interface FileState {
-  name: string;
-  content: string;
-  tokenCount: number;
-  mode: InferenceMode;
-  // RAG-specific - null when mode === "direct"
-  chunks: EmbeddedChunk[] | null;
-}
 
 export interface EmbeddedChunk {
   text: string;
   embedding: number[];
 }
 
+// Chunk with its retrieval score — used in RagInternals
+export interface ScoredChunk {
+  text: string;
+  embedding: number[];
+  score: number;
+  index: number; // position in the original chunk array
+}
+
+export interface FileState {
+  name: string;
+  content: string;
+  tokenCount: number;
+  contextWindow: number; // the model's context window at index time
+  mode: InferenceMode;
+  chunks: EmbeddedChunk[] | null;
+}
+
 export type AppStage =
-  | "idle"          // no model loaded yet
-  | "loading-model" // downloading / initialising
-  | "ready"         // model ready, no file loaded
-  | "indexing"      // file uploaded, embedding in progress
-  | "chat";         // file ready, conversation active
+  | "idle"
+  | "loading-model"
+  | "ready"
+  | "indexing"
+  | "chat";
 
 export type ModelLoadStatus =
   | { stage: "idle" }

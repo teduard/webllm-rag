@@ -26,20 +26,22 @@
   cursor: default;
 }
 
-.icon {
-  font-size: 20px;
-  color: var(--ink3);
+.heroIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--ink4);
 }
+
 .main {
-  font-size: 12px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink2);
 }
 .hint {
-  font-size: 10px;
+  font-size: var(--font-size-sidebar);
   color: var(--ink3);
 }
 .errMsg {
-  font-size: 11px;
+  font-size: var(--font-size-sidebar);
   color: var(--danger);
   margin-top: 4px;
 }
@@ -56,4 +58,72 @@
   to {
     transform: rotate(360deg);
   }
+}
+
+/* ── Samples ── */
+.samples {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.samplesLabel {
+  font-size: 9.5px;
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sampleGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sampleCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
+  align-items: flex-start;
+}
+.sampleCard:hover:not(:disabled) {
+  border-color: var(--border2);
+  background: var(--surface2);
+}
+.sampleCard:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sampleMode {
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+}
+.sampleLabel {
+  font-size: 12px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.sampleDesc {
+  font-size: 10px;
+  color: var(--ink3);
+  line-height: 1.5;
+}
+
+.sampleSpinner {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
 }
