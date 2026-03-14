@@ -27,17 +27,17 @@ Marcus flagged that three regressions in Q2 traced back to features shipped with
 
 Sandra presented the three priority tiers:
 
-**P0 — must ship by end of Q3:**
-- Analytics dashboard (carried from Q2) — owner: James, target: 6 September
-- Notification centre redesign — owner: Priya, target: 20 September
-- Mobile performance audit and fixes — owner: Marcus, target: 4 October
+**P0 - must ship by end of Q3:**
+- Analytics dashboard (carried from Q2) - owner: James, target: 6 September
+- Notification centre redesign - owner: Priya, target: 20 September
+- Mobile performance audit and fixes - owner: Marcus, target: 4 October
 
-**P1 — ship if capacity allows:**
+**P1 - ship if capacity allows:**
 - Saved searches feature
 - Bulk export (CSV and PDF)
 - Dark mode for the admin panel
 
-**P2 — under consideration, no commitment:**
+**P2 - under consideration, no commitment:**
 - AI-assisted tagging
 - Multi-language support
 - Calendar integration

@@ -1,4 +1,4 @@
-ARCHITECTURE REVIEW — PLATFORM MIGRATION
+ARCHITECTURE REVIEW - PLATFORM MIGRATION
 Transcript of recorded session, 22 October 2024
 Participants: Elena Vasquez (Staff Engineer), Tom Ridley (Engineering Manager), Aiko Tanaka (Senior Backend), 
               Dev Patel (Infrastructure), Roisin McCarthy (Security), Frank Adler (Data Engineering)
@@ -6,9 +6,9 @@ Participants: Elena Vasquez (Staff Engineer), Tom Ridley (Engineering Manager), 
 ---
 
 RIDLEY: Let's get started. This is the formal architecture review for the platform migration. 
-Elena, you're leading — can you set context for anyone who hasn't been close to this?
+Elena, you're leading - can you set context for anyone who hasn't been close to this?
 
-VASQUEZ: Sure. We've been on the monolith since 2017. The core issue isn't the age — it's that 
+VASQUEZ: Sure. We've been on the monolith since 2017. The core issue isn't the age - it's that 
 we've hit a ceiling on deployment frequency. Right now we deploy once a week, Sunday nights, 
 four-hour window. That's a business constraint at this point. Competitors are shipping daily. 
 The goal of this migration is to move to a service-oriented architecture that lets individual 
@@ -19,12 +19,12 @@ RIDLEY: What's the proposed decomposition?
 VASQUEZ: We've identified six bounded contexts based on two months of domain analysis. 
 Authentication and identity, billing and subscriptions, content delivery, search and indexing, 
 notifications, and user preferences. Each becomes an independent service. The monolith stays 
-alive during the migration — we're doing a strangler fig, not a big bang rewrite.
+alive during the migration - we're doing a strangler fig, not a big bang rewrite.
 
 TANAKA: Can you say more about the strangler fig approach? What does that look like in practice?
 
 VASQUEZ: New features go into services from day one. Existing features get migrated one at a time 
-as we touch them. The monolith and the new services coexist behind a routing layer — the API 
+as we touch them. The monolith and the new services coexist behind a routing layer - the API 
 gateway routes to the monolith for anything not yet migrated, and to the relevant service for 
 anything that has been. Over 18 to 24 months the monolith shrinks until it's empty and we 
 decommission it.
@@ -33,12 +33,12 @@ PATEL: I want to flag infrastructure complexity early. Running the monolith and 
 parallel means our infrastructure footprint roughly doubles during the transition. We're currently 
 on a mix of bare metal and EC2. My recommendation is we take this opportunity to move everything 
 to Kubernetes. It's more operational overhead upfront but it gives us the deployment primitives 
-we need — independent scaling, rolling deployments, health-check-based routing.
+we need - independent scaling, rolling deployments, health-check-based routing.
 
 RIDLEY: What's the cost implication of doubling the footprint?
 
 PATEL: I've modelled three scenarios. Keeping bare metal for the monolith and adding EKS for 
-services is the cheapest short-term — roughly 40% cost increase. Full migration to EKS is 
+services is the cheapest short-term - roughly 40% cost increase. Full migration to EKS is 
 about 65% cost increase during transition but drops back to near-current costs once the monolith 
 is decommissioned. Full migration to GKE with committed use discounts is actually the cheapest 
 long-term option but requires more migration work upfront. I'll circulate the full model after 
@@ -55,7 +55,7 @@ service issues JWTs, every other service validates them using the shared library
 library version in each service so updates are explicit, not automatic.
 
 MCCARTHY: That's better than independent implementations but I'd push further. I want to propose 
-a service mesh — specifically Istio — to handle mutual TLS between services automatically. 
+a service mesh - specifically Istio - to handle mutual TLS between services automatically. 
 That way service-to-service communication is encrypted and authenticated at the infrastructure 
 level and we don't rely on each service correctly implementing mTLS.
 
@@ -67,7 +67,7 @@ MCCARTHY: I'm open to Linkerd. My requirement is that we have automatic mTLS bet
 before any service goes to production. I don't want to be in a position where some services 
 have it and some don't.
 
-RIDLEY: Let's note that as a hard requirement — mTLS between all services before any service 
+RIDLEY: Let's note that as a hard requirement - mTLS between all services before any service 
 goes to production, implemented via service mesh, Istio or Linkerd TBD. Dev and Roisin, can 
 you come back with a recommendation by the end of the month?
 
@@ -76,21 +76,21 @@ MCCARTHY: Agreed.
 
 ADLER: I want to talk about the data layer because I think it's the hardest part of this 
 migration and it hasn't come up yet. Right now everything shares one Postgres instance. 
-True service independence means each service owns its data — separate schemas at minimum, 
+True service independence means each service owns its data - separate schemas at minimum, 
 ideally separate databases. But we have 47 cross-table joins in the current application that 
 cross what will become service boundaries.
 
 TANAKA: 47 is a lot. Do you have a breakdown of which service boundaries they cross?
 
 ADLER: Yes, I'll share the analysis after this meeting. The worst offender is the reporting 
-module — it joins across content, user preferences, and billing in a single query. That query 
+module - it joins across content, user preferences, and billing in a single query. That query 
 runs on the hourly analytics job and it currently takes about 8 minutes. If we split the data 
 across three service databases we can't do that join anymore. We'd need to either denormalise 
 into a reporting-specific data store or move to an event-driven approach where each service 
 publishes events and we materialise the reporting view from the event stream.
 
 VASQUEZ: The event-driven approach is the right long-term direction but it's a significant 
-additional workload. I'd propose we handle the reporting module as a special case — it doesn't 
+additional workload. I'd propose we handle the reporting module as a special case - it doesn't 
 need to be migrated in the first phase. It stays in the monolith, reading from the shared 
 database, until we have the event infrastructure in place.
 
@@ -106,19 +106,19 @@ months for reporting migration. Frank, does that work?
 ADLER: It works if we're actually building the event infrastructure. What's the plan there?
 
 VASQUEZ: Kafka for the event bus. We already have a small Kafka cluster for the notifications 
-pipeline — the proposal is to expand it and make it the standard for cross-service communication. 
+pipeline - the proposal is to expand it and make it the standard for cross-service communication. 
 Schema registry with Avro for event contracts. Each service owns the schema for the events it 
 produces.
 
 TANAKA: Who enforces schema compatibility? If the content service changes an event schema and 
 the search service depends on it, we need a process for that.
 
-VASQUEZ: The schema registry handles backwards compatibility checks automatically — it rejects 
+VASQUEZ: The schema registry handles backwards compatibility checks automatically - it rejects 
 schemas that break consumers. For intentional breaking changes, the producer service is 
 responsible for running both schema versions in parallel until all consumers have migrated. 
 We'd add this to our service contract documentation.
 
-RIDLEY: Let's talk about team structure. Six services — how do ownership boundaries map to 
+RIDLEY: Let's talk about team structure. Six services - how do ownership boundaries map to 
 current teams?
 
 VASQUEZ: Auth and billing to the platform team. Content delivery and search to the content team. 
@@ -133,7 +133,7 @@ RIDLEY: Good flag. I'll take that to the resourcing conversation with the VPE. M
 we hire one more senior engineer for the content team before migration starts, but I want to 
 model it properly.
 
-MCCARTHY: One more thing on security — I want to make sure we have a secret management 
+MCCARTHY: One more thing on security - I want to make sure we have a secret management 
 strategy in place before we start. Right now credentials are in environment variables on the 
 servers, which is fine for the monolith but doesn't scale to six services on Kubernetes. 
 We should be using Vault or the cloud provider's secret manager.
@@ -142,7 +142,7 @@ PATEL: We've been evaluating AWS Secrets Manager. It integrates natively with EK
 per-secret cost is low. I'd recommend it over Vault unless we have a specific need for 
 Vault's dynamic secrets features.
 
-MCCARTHY: Dynamic secrets are actually something I'd want for the database credentials — 
+MCCARTHY: Dynamic secrets are actually something I'd want for the database credentials - 
 Vault can issue short-lived database credentials automatically, which eliminates the risk of 
 long-lived credentials being compromised. But I acknowledge that's a nice-to-have rather 
 than a blocker. AWS Secrets Manager for the first phase is acceptable.
@@ -182,10 +182,10 @@ Open items:
 RIDLEY: Next review is in four weeks. Elena will circulate the detailed migration plan by 
 8 November for review before the session. Any final questions?
 
-TANAKA: Just to confirm — new feature work. Starting when exactly do new features go to 
+TANAKA: Just to confirm - new feature work. Starting when exactly do new features go to 
 services rather than the monolith?
 
-VASQUEZ: First of December. That gives us six weeks to get the base infrastructure in place — 
+VASQUEZ: First of December. That gives us six weeks to get the base infrastructure in place - 
 Kubernetes cluster, API gateway, CI/CD pipelines for services, the auth library. After the 
 first of December, anything net-new goes into a service.
 

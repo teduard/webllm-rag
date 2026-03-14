@@ -1,17 +1,25 @@
 import { useState, useCallback } from "react";
 import type { FileState, Message, IndexProgress, ScoredChunk } from "../types";
 import { chunkDocument } from "../lib/chunker";
-import { embed, embedOne, decideMode, streamChat, directPrompt, ragPrompt, getModelId } from "../lib/llm";
+import {
+  embed,
+  embedOne,
+  decideMode,
+  streamChat,
+  directPrompt,
+  ragPrompt,
+  getModelId,
+} from "../lib/llm";
 import { retrieve, buildContext } from "../lib/retrieval";
 
 export function useSession() {
-  const [file, setFile]               = useState<FileState | null>(null);
-  const [messages, setMessages]       = useState<Message[]>([]);
-  const [isThinking, setThinking]     = useState(false);
-  const [indexProgress, setIndex]     = useState<IndexProgress | null>(null);
-  // Last retrieval — shown in RagInternals
-  const [lastChunks, setLastChunks]   = useState<ScoredChunk[] | null>(null);
-  const [lastPrompt, setLastPrompt]   = useState<string | null>(null);
+  const [file, setFile] = useState<FileState | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [isThinking, setThinking] = useState(false);
+  const [indexProgress, setIndex] = useState<IndexProgress | null>(null);
+  // Last retrieval - shown in RagInternals
+  const [lastChunks, setLastChunks] = useState<ScoredChunk[] | null>(null);
+  const [lastPrompt, setLastPrompt] = useState<string | null>(null);
 
   // ── Load file ───────────────────────────────────────────────────────────
   const loadFile = useCallback(async (f: File) => {
@@ -40,17 +48,35 @@ export function useSession() {
         const rawChunks = chunkDocument(content, f.name);
 
         setIndex({ stage: "embedding", done: 0, total: rawChunks.length });
-        const texts      = rawChunks.map(c => c.text);
-        const embeddings = await embed(texts);
-        setIndex({ stage: "embedding", done: rawChunks.length, total: rawChunks.length });
+
+        const BATCH_SIZE = 4;
+        const allEmbeddings: number[][] = [];
+
+        for (let i = 0; i < rawChunks.length; i += BATCH_SIZE) {
+          const batch = rawChunks.slice(i, i + BATCH_SIZE);
+          const batchEmbeddings = await embed(batch.map((c) => c.text));
+          allEmbeddings.push(...batchEmbeddings);
+          setIndex({
+            stage: "embedding",
+            done: Math.min(i + BATCH_SIZE, rawChunks.length),
+            total: rawChunks.length,
+          });
+        }
 
         chunks = rawChunks.map((c, i) => ({
-          text:      c.text,
-          embedding: embeddings[i],
+          text: c.text,
+          embedding: allEmbeddings[i],
         }));
       }
 
-      setFile({ name: f.name, content, tokenCount, contextWindow, mode, chunks });
+      setFile({
+        name: f.name,
+        content,
+        tokenCount,
+        contextWindow,
+        mode,
+        chunks,
+      });
       setIndex({ stage: "done" });
     } catch (err) {
       setIndex({ stage: "error", error: String(err) });
@@ -58,52 +84,58 @@ export function useSession() {
   }, []);
 
   // ── Send message ────────────────────────────────────────────────────────
-  const send = useCallback(async (text: string) => {
-    if (!file || isThinking) return;
+  const send = useCallback(
+    async (text: string) => {
+      if (!file || isThinking) return;
 
-    const userMsg: Message      = { role: "user",      text };
-    const assistantMsg: Message = { role: "assistant", text: "" };
-    setMessages(prev => [...prev, userMsg, assistantMsg]);
-    setThinking(true);
+      const userMsg: Message = { role: "user", text };
+      const assistantMsg: Message = { role: "assistant", text: "" };
+      setMessages((prev) => [...prev, userMsg, assistantMsg]);
+      setThinking(true);
 
-    // Reset previous retrieval state for this new question
-    setLastChunks(null);
-    setLastPrompt(null);
+      // Reset previous retrieval state for this new question
+      setLastChunks(null);
+      setLastPrompt(null);
 
-    try {
-      let system: string;
+      try {
+        let system: string;
 
-      if (file.mode === "direct") {
-        system = directPrompt(file.content, file.name);
-      } else {
-        const qVec   = await embedOne(text);
-        const hits   = retrieve(file.chunks!, qVec);
-        const context = buildContext(hits);
-        system        = ragPrompt(context, file.name);
-        setLastChunks(hits);
-      }
+        if (file.mode === "direct") {
+          system = directPrompt(file.content, file.name);
+        } else {
+          const qVec = await embedOne(text);
+          const hits = retrieve(file.chunks!, qVec);
+          const context = buildContext(hits);
+          system = ragPrompt(context, file.name);
+          setLastChunks(hits);
+        }
 
-      setLastPrompt(system);
+        setLastPrompt(system);
 
-      let fullText = "";
-      await streamChat(system, text, token => {
-        fullText += token;
-        setMessages(prev => {
+        let fullText = "";
+        await streamChat(system, text, (token) => {
+          fullText += token;
+          setMessages((prev) => {
+            const next = [...prev];
+            next[next.length - 1] = { role: "assistant", text: fullText };
+            return next;
+          });
+        });
+      } catch (err) {
+        setMessages((prev) => {
           const next = [...prev];
-          next[next.length - 1] = { role: "assistant", text: fullText };
+          next[next.length - 1] = {
+            role: "assistant",
+            text: `Error: ${String(err)}`,
+          };
           return next;
         });
-      });
-    } catch (err) {
-      setMessages(prev => {
-        const next = [...prev];
-        next[next.length - 1] = { role: "assistant", text: `Error: ${String(err)}` };
-        return next;
-      });
-    } finally {
-      setThinking(false);
-    }
-  }, [file, isThinking]);
+      } finally {
+        setThinking(false);
+      }
+    },
+    [file, isThinking],
+  );
 
   const reset = useCallback(() => {
     setFile(null);
@@ -114,8 +146,14 @@ export function useSession() {
   }, []);
 
   return {
-    file, messages, isThinking, indexProgress,
-    lastChunks, lastPrompt,
-    loadFile, send, reset,
+    file,
+    messages,
+    isThinking,
+    indexProgress,
+    lastChunks,
+    lastPrompt,
+    loadFile,
+    send,
+    reset,
   };
 }

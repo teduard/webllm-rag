@@ -6,6 +6,7 @@ import { FileZone } from "./components/FileZone";
 import { Chat } from "./components/Chat";
 import { Sidebar } from "./components/Sidebar";
 import { RagInternals } from "./components/RagInternals";
+import { Modal } from "./components/Modal";
 import s from "./App.module.css";
 
 export default function App() {
@@ -47,7 +48,7 @@ export default function App() {
         onUpload={() => {}}
         onDelete={() => {}}
       >
-        {/* Step 1 — Model */}
+        {/* Step 1 - Model */}
         <div className={s.center}>
           <div className={s.fileWrap}>
             <div className={s.fileHeader}>
@@ -64,7 +65,7 @@ export default function App() {
 
         <hr className={s.divider} />
 
-        {/* Step 2 — File */}
+        {/* Step 2 - File */}
         <div className={s.center}>
           <div className={s.fileWrap}>
             <div className={s.fileHeader}>
@@ -75,8 +76,8 @@ export default function App() {
             </div>
 
             {status.stage === "ready" ? (
-            <FileZone indexProgress={indexProgress} onFile={handleFile} />
-            ): (
+              <FileZone indexProgress={indexProgress} onFile={handleFile} />
+            ) : (
               <span className={s.emptyText}>
                 Load a model to enable file upload.
               </span>
@@ -86,7 +87,7 @@ export default function App() {
 
         <hr className={s.divider} />
 
-        {/* Step 3 — RAG internals */}
+        {/* Step 3 - RAG internals */}
         <div className={s.center}>
           <div className={s.fileWrap}>
             <div className={s.fileHeader}>
@@ -99,9 +100,9 @@ export default function App() {
             />
           </div>
         </div>
-
       </Sidebar>
 
+      {/* Step 4 - Chat */}
       {file && fileReady && (
         <Chat
           file={file}
@@ -110,6 +111,8 @@ export default function App() {
           onSend={send}
         />
       )}
+
+
     </div>
   );
 }

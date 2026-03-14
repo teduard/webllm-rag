@@ -81,7 +81,6 @@
   gap: 8px;
 }
 .emptyTitle {
-  font-family: var(--font);
   font-size: 3.5rem;
   font-weight: 300;
   font-style: italic;
@@ -221,7 +220,6 @@
   border-radius: var(--radius);
   padding: 8px 12px;
   color: var(--ink);
-  font-family: var(--font);
   font-size: var(--font-size-all);
   line-height: 1.5;
   resize: none;

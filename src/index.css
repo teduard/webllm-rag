@@ -8,7 +8,7 @@
 
 :root {
   --bg: #d1d5d3;
-  --surface: rgba(250, 250, 250,0.6);
+  --surface: rgba(250, 250, 250, 0.6);
   --surface2: #89abaa;
   --border: #3f5246;
   --border2: #3a3836;
@@ -22,11 +22,8 @@
   --ok: #6a9870;
   --radius: 3px;
   --sidebar: 420px;
-
   --font-logo: "Tangerine", cursive;
-
   --font: "Lekton", monospace;
-
   --font-size-all: 14.5px;
   --font-size-sidebar: 14px;
 }
@@ -35,7 +32,6 @@ html,
 body,
 #root {
   height: 100%;
-  /* background: var(--bg); */
   color: var(--ink);
   font-family: var(--font);
 
@@ -48,15 +44,13 @@ body,
 }
 
 body {
-  background-image: url('./assets/bg.svg');
+  background-image: url("./assets/bg.svg");
   background-size: cover;
   background-position: top;
-    background-repeat: no-repeat;   
+  background-repeat: no-repeat;
 }
 
-
 button {
-  font-family: var(--font);
   cursor: pointer;
 }
 ::selection {
@@ -68,5 +62,4 @@ button {
 }
 ::-webkit-scrollbar-thumb {
   background: var(--ink4);
-  /* border-radius: 2px; */
 }

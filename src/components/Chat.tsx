@@ -62,84 +62,81 @@ export function Chat({ file, messages, isThinking, onSend }: Props) {
   }
 
   return (
-        <div className={s.panel}>
-          {/* Token / mode bar */}
-          <div className={s.topBar}>
-            <div className={s.fileInfo}>
-              <span className={s.fileName}>{file.name}</span>
-            </div>
+    <div className={s.panel}>
+      {/* Token / mode bar */}
+      <div className={s.topBar}>
+        <div className={s.fileInfo}>
+          <span className={s.fileName}>{file.name}</span>
+        </div>
+      </div>
+
+      {/* Messages */}
+      <div className={s.messages}>
+        {messages.length === 0 && (
+          <div className={s.empty}>
+            <p className={s.emptyTitle}>ready.</p>
+            <p className={s.emptySub}>
+              {file.mode === "direct"
+                ? "Full file in context - ask anything."
+                : `Large file - answering from top excerpts.`}
+            </p>
           </div>
+        )}
 
-          {/* Messages */}
-          <div className={s.messages}>
-            {messages.length === 0 && (
-              <div className={s.empty}>
-                <p className={s.emptyTitle}>ready.</p>
-                <p className={s.emptySub}>
-                  {file.mode === "direct"
-                    ? "Full file in context - ask anything."
-                    : `Large file - answering from top excerpts.`}
-                </p>
-              </div>
-            )}
-
-            {messages.map((m, i) => (
-              <div
-                key={i}
-                className={`${s.bubble} ${m.role === "user" ? s.user : s.assistant}`}
-              >
-                <span className={s.role}>
-                  {m.role === "user" ? "you" : "ai"}
-                </span>
-                {m.role === "assistant" ? (
-                  <div className={s.md}>
-                    {m.text ? (
-                      <ReactMarkdown>{m.text}</ReactMarkdown>
-                    ) : (
-                      <span className={s.cursor} />
-                    )}
-                  </div>
+        {messages.map((m, i) => (
+          <div
+            key={i}
+            className={`${s.bubble} ${m.role === "user" ? s.user : s.assistant}`}
+          >
+            <span className={s.role}>{m.role === "user" ? "you" : "ai"}</span>
+            {m.role === "assistant" ? (
+              <div className={s.md}>
+                {m.text ? (
+                  <ReactMarkdown>{m.text}</ReactMarkdown>
                 ) : (
-                  <p className={s.userText}>{m.text}</p>
+                  <span className={s.cursor} />
                 )}
               </div>
-            ))}
-
-            {isThinking &&
-              messages[messages.length - 1]?.role !== "assistant" && (
-                <div className={`${s.bubble} ${s.assistant}`}>
-                  <span className={s.role}>ai</span>
-                  <span className={s.cursor} />
-                </div>
-              )}
-            <div ref={bottomRef} />
+            ) : (
+              <p className={s.userText}>{m.text}</p>
+            )}
           </div>
+        ))}
 
-          {/* Input */}
-          <div className={s.inputRow}>
-            <textarea
-              ref={textareaRef}
-              className={s.textarea}
-              value={draft}
-              placeholder="ask a question"
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  e.preventDefault();
-                  submit();
-                }
-              }}
-              disabled={isThinking}
-              rows={1}
-            />
-            <button
-              className={s.sendBtn}
-              onClick={submit}
-              disabled={isThinking || !draft.trim()}
-            >
-              ↵
-            </button>
+        {isThinking && messages[messages.length - 1]?.role !== "assistant" && (
+          <div className={`${s.bubble} ${s.assistant}`}>
+            <span className={s.role}>ai</span>
+            <span className={s.cursor} />
           </div>
-        </div>
+        )}
+        <div ref={bottomRef} />
+      </div>
+
+      {/* Input */}
+      <div className={s.inputRow}>
+        <textarea
+          ref={textareaRef}
+          className={s.textarea}
+          value={draft}
+          placeholder="ask a question"
+          onChange={(e) => setDraft(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter") {
+              e.preventDefault();
+              submit();
+            }
+          }}
+          disabled={isThinking}
+          rows={1}
+        />
+        <button
+          className={s.sendBtn}
+          onClick={submit}
+          disabled={isThinking || !draft.trim()}
+        >
+          ↵
+        </button>
+      </div>
+    </div>
   );
 }

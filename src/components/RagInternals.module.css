@@ -195,7 +195,6 @@
   background: none;
   border: 1px solid var(--border2);
   color: var(--ink3);
-  font-family: var(--font);
   font-size: var(--font-size-sidebar);
   padding: 7px 14px;
   border-radius: var(--radius);
@@ -224,7 +223,6 @@
   border: 1px solid var(--border);
   border-radius: var(--radius);
   color: var(--ink2);
-  font-family: var(--font);
   font-size: var(--font-size-sidebar);
   line-height: 1.7;
   padding: 12px;

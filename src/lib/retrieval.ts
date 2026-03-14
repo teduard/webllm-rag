@@ -11,11 +11,11 @@ export function retrieve(
   chunks: EmbeddedChunk[],
   query: number[],
   k = 4,
-  minScore = 0.35
+  minScore = 0.35,
 ): ScoredChunk[] {
   return chunks
     .map((c, i) => ({ ...c, score: dot(query, c.embedding), index: i }))
-    .filter(x => x.score >= minScore)
+    .filter((x) => x.score >= minScore)
     .sort((a, b) => b.score - a.score)
     .slice(0, k);
 }

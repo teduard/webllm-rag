@@ -7,7 +7,7 @@ interface SampleFile {
   filename: string;
   label: string;
   description: string;
-  mode: "direct" | "rag";  // hint shown to user — actual decision made at runtime
+  mode: "direct" | "rag";  // hint shown to user - actual decision made at runtime
 }
 
 const SAMPLES: SampleFile[] = [

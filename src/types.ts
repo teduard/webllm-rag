@@ -20,7 +20,7 @@ export interface EmbeddedChunk {
   embedding: number[];
 }
 
-// Chunk with its retrieval score — used in RagInternals
+// Chunk with its retrieval score - used in RagInternals
 export interface ScoredChunk {
   text: string;
   embedding: number[];
@@ -37,12 +37,7 @@ export interface FileState {
   chunks: EmbeddedChunk[] | null;
 }
 
-export type AppStage =
-  | "idle"
-  | "loading-model"
-  | "ready"
-  | "indexing"
-  | "chat";
+export type AppStage = "idle" | "loading-model" | "ready" | "indexing" | "chat";
 
 export type ModelLoadStatus =
   | { stage: "idle" }
@@ -50,11 +45,7 @@ export type ModelLoadStatus =
   | { stage: "ready"; modelId: string }
   | { stage: "error"; message: string };
 
-export type IndexStage =
-  | "chunking"
-  | "embedding"
-  | "done"
-  | "error";
+export type IndexStage = "chunking" | "embedding" | "done" | "error";
 
 export interface IndexProgress {
   stage: IndexStage;

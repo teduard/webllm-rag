@@ -11,7 +11,7 @@ interface Props {
   lastPrompt: string | null;
 }
 
-// Score bar — visual representation of cosine similarity (0–1)
+// Score bar - visual representation of cosine similarity (0–1)
 function ScoreBar({ score }: { score: number }) {
   const pct   = Math.round(score * 100);
   const color = score >= 0.65 ? "var(--ok)"
@@ -118,7 +118,7 @@ export function RagInternals({ file, lastChunks, lastPrompt }: Props) {
               <strong>{file.name}</strong> exceeds the {available.toLocaleString()} available
               tokens ({file.contextWindow.toLocaleString()}-token window minus{" "}
               {PROMPT_RESERVE.toLocaleString()} reserved). The file was split into chunks and
-              embedded — each question retrieves the most relevant excerpts by cosine similarity.
+              embedded - each question retrieves the most relevant excerpts by cosine similarity.
             </>
           )}
         </p>
@@ -130,7 +130,7 @@ export function RagInternals({ file, lastChunks, lastPrompt }: Props) {
 
         {isDirect ? (
           <p className={s.naNote}>
-            not applicable — full file is in context.
+            not applicable - full file is in context.
           </p>
         ) : !lastChunks ? (
           <p className={s.naNote}>
