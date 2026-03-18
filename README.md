@@ -6,6 +6,12 @@ A browser-native RAG system that runs entirely on your GPU - no server, no API k
 
 View the live <a href="https://teduard.github.io/webllm-rag/">demo</a>
 
+Or checkout a recorded demo:
+
+<video src="https://github.com/user-attachments/assets/2090228b-9ec0-40f0-a176-07ed0967741c" width="800" controls muted autoplay loop>
+  Your browser does not support the video tag.
+</video>
+
 ## How it works
 
 ### Adaptive inference
