@@ -1,0 +1,122 @@
+.zone {
+  border: 1px dashed var(--border2);
+  border-radius: var(--radius);
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  text-align: center;
+  min-height: 100px;
+}
+.zone:hover:not(.busy) {
+  border-color: var(--accent2);
+  background: var(--surface);
+}
+.drag {
+  border-color: var(--accent) !important;
+  background: var(--surface) !important;
+}
+.busy {
+  cursor: default;
+}
+
+.heroIcon {
+  width: 24px;
+  height: 24px;
+  color: var(--ink4);
+}
+
+.main {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink2);
+}
+.hint {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+}
+.errMsg {
+  font-size: var(--font-size-sidebar);
+  color: var(--danger);
+  margin-top: 4px;
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.samples {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.samplesLabel {
+  font-size: 9.5px;
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sampleGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.sampleCard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 10px 12px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: pointer;
+  align-items: flex-start;
+}
+.sampleCard:hover:not(:disabled) {
+  border-color: var(--border2);
+  background: var(--surface2);
+}
+.sampleCard:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.sampleMode {
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+}
+.sampleLabel {
+  font-size: 12px;
+  color: var(--ink);
+  font-weight: 500;
+}
+.sampleDesc {
+  font-size: 10px;
+  color: var(--ink3);
+  line-height: 1.5;
+}
+
+.sampleSpinner {
+  width: 10px;
+  height: 10px;
+  border: 1.5px solid var(--border2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}

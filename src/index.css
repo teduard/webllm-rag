@@ -1,0 +1,98 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #d1d5d3;
+  --surface: rgba(250, 250, 250, 0.7);
+  --surface2: #c1e6ff;
+  --border: #3f5246;
+  --border2: #3a3836;
+  --ink: #000000;
+  --ink2: #080808;
+  --ink3: #13287e;
+  --ink4: #429b03;
+  --accent: #329dff;
+  --accent2: #096189;
+  --danger: #b85848;
+  --ok: #6a9870;
+  --radius: 3px;
+  --sidebar: 420px;
+  --sidebarMobile: 100%;
+  --font-logo: "Tangerine", cursive;
+  --font: "Lekton", monospace;
+  --font-size-all: 14.5px;
+  --font-size-sidebar: 14px;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  color: var(--ink);
+  font-family: var(--font);
+  font-style: normal;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+body {
+  background-image: url("./assets/bg.svg");
+  background-size: cover;
+  background-position: top;
+  background-repeat: repeat;
+}
+
+::selection {
+  background: var(--accent2);
+  color: var(--bg);
+}
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--ink4);
+}
+
+button {
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--accent2);
+  padding: 8px 4px;
+  font-size: var(--font-size-sidebar);
+  border-radius: var(--radius);
+  color: var(--ink3);
+  letter-spacing: 0.04em;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+button:hover {
+  border-color: var(--accent) !important;
+  background: var(--surface2) !important;
+}
+
+.heroIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.emptyText {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+}
+
+a, a:visited {
+  color: var(--ink3);
+}
+
+a:hover {
+  color: var(--ink2);
+}

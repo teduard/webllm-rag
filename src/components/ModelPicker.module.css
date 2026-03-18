@@ -1,0 +1,137 @@
+.wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.heading {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.title {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.sub {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+  line-height: 1.7;
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 11px 13px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  cursor: pointer;
+}
+.card:hover:not(:disabled) {
+  border-color: var(--border2);
+  background: var(--surface2);
+}
+.card:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+.active {
+  border-color: var(--accent) !important;
+  background: var(--surface2) !important;
+}
+
+.cardRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.cardName {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink);
+  font-weight: 500;
+  padding-right: 12px;
+}
+.cardSize {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+}
+.cardCtx {
+  font-size: var(--font-size-sidebar);
+  color: var(--accent2);
+}
+.cardDesc {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+  line-height: 1.5;
+  margin-top: 2px;
+}
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  height: 100%;
+  border-radius: 2px;
+}
+.track {
+  height: 4px;
+  background: var(--border);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.bar {
+  height: 100%;
+  background: var(--ok);
+  border-radius: 2px;
+}
+.pct {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink2);
+}
+.ptxt {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.err {
+  font-size: var(--font-size-sidebar);
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+}
+
+.note {
+  font-size: var(--font-size-sidebar);
+  color: var(--ink3);
+  text-align: center;
+}
